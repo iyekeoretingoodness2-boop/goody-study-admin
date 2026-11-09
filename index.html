@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Goody Study App — Admin</title>
+<style>
+:root{--navy:#10264b;--blue:#2456c7;--gold:#e5b84b;--bg:#f3f6fb;--ink:#1d2939;--muted:#667085;--line:#e5eaf2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--ink)}
+header{background:var(--navy);color:#fff;padding:18px 16px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;margin:0}header p{margin:5px 0 0;color:#d8e2f3;font-size:12px}
+.wrap{max-width:960px;margin:22px auto;padding:0 14px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:16px;box-shadow:0 4px 16px #12284b0a}
+h2{color:var(--navy);font-size:19px;margin:0 0 14px}label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}
+input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px}
+button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color:#fff;font-weight:bold}.secondary{background:#edf2fa;color:var(--navy)}.danger{background:#a92d36}.success{background:#16794b}
+.login{max-width:440px;margin:35px auto}.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:#f6f8fc;border-radius:12px;padding:15px}.stat strong{display:block;font-size:26px;color:var(--navy)}.stat span,.meta{font-size:12px;color:var(--muted)}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}.toolbar input{max-width:280px}
+.student{border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}.student-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.student h3{margin:0 0 5px;font-size:16px}.meta{line-height:1.7;overflow-wrap:anywhere}.badge{font-size:11px;font-weight:bold;border-radius:20px;padding:5px 9px;background:#fff1cf;color:#795400;height:max-content}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.notice{padding:12px;border-radius:9px;background:#fff6dc;color:#6b520b;font-size:13px;margin-top:12px;line-height:1.5}.error{background:#fff0f0;color:#9b2525}.empty{color:var(--muted);padding:18px;text-align:center}
+@media(max-width:560px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}}
+</style></head>
+<body>
+<header><div><h1>Goody Study App</h1><p>Administrator dashboard</p></div><button id="logout" class="secondary hidden">Sign out</button></header>
+<main class="wrap">
+<section id="loginPanel" class="card login"><h2>Administrator sign in</h2><p class="meta">Sign in with the administrator account created in Firebase Authentication.</p>
+<label>Email address</label><input id="email" type="email" autocomplete="username" placeholder="Admin email">
+<label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password">
+<button id="login" style="width:100%;margin-top:16px">Sign in</button><div id="loginMsg" class="notice hidden"></div></section>
+<section id="adminPanel" class="hidden">
+<div class="card"><h2>Dashboard overview</h2><div class="stats">
+<div class="stat"><strong id="total">0</strong><span>Total student accounts</span></div>
+<div class="stat"><strong id="pending">0</strong><span>Awaiting approval</span></div>
+<div class="stat"><strong id="approved">0</strong><span>Approved students</span></div></div>
+<div id="statusMsg" class="notice">Loading student records…</div></div>
+<div class="card"><div class="toolbar"><h2 style="margin:0">Student management</h2><input id="search" placeholder="Search name, email or phone"></div><div id="students"><div class="empty">Loading…</div></div></div>
+<div class="card"><h2>More admin tools</h2><p class="meta">Subject management, study-material uploads, CBT management and settings are planned for the next version.</p></div>
+</section></main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,getDocs,doc,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyA5e3hqAkgkpAHhsDUN46ms9iMGlsPtgjI",authDomain:"goody-study-app-d1083.firebaseapp.com",projectId:"goody-study-app-d1083",storageBucket:"goody-study-app-d1083.firebasestorage.app",messagingSenderId:"698337451094",appId:"1:698337451094:web:e4f49ec6fc9e1d297baff7",measurementId:"G-D0KTJBWRP0"};
+const ADMIN_UID="KG1YoAzvJea2Y9oPLlAx6Fow38v1",app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);let records=[];
+function message(id,text,error=false){$(id).textContent=text;$(id).classList.remove("hidden");$(id).classList.toggle("error",error)}
+function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function friendly(e){return ({"auth/invalid-credential":"Email or password is incorrect.","auth/too-many-requests":"Too many attempts. Wait and try again.","auth/unauthorized-domain":"Add this website domain in Firebase Authentication > Settings > Authorized domains."})[e.code]||e.message||e.code}
+$("login").onclick=async()=>{ $("login").disabled=true;try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){message("loginMsg",friendly(e),true)}finally{$("login").disabled=false}};
+$("logout").onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async user=>{$("loginPanel").classList.toggle("hidden",!!user);$("adminPanel").classList.add("hidden");$("logout").classList.toggle("hidden",!user);if(!user)return;if(user.uid!==ADMIN_UID){await signOut(auth);message("loginMsg","Access denied: this account is not the configured administrator.",true);return}$("adminPanel").classList.remove("hidden");await loadStudents()});
+async function loadStudents(){try{const snap=await getDocs(collection(db,"users"));records=snap.docs.map(d=>({id:d.id,...d.data()}));render();message("statusMsg","Student records loaded.");}catch(e){message("statusMsg","Could not load records: "+friendly(e),true)}}
+function render(){const pending=records.filter(x=>x.status==="pending").length,approved=records.filter(x=>x.status==="approved").length;$("total").textContent=records.length;$("pending").textContent=pending;$("approved").textContent=approved;const term=$("search").value.toLowerCase(),list=records.filter(x=>[x.fullName,x.email,x.phone,x.status].join(" ").toLowerCase().includes(term));if(!list.length){$("students").innerHTML='<div class="empty">No student records found yet. They will appear after the student registration system is connected.</div>';return}
+$("students").innerHTML=list.map(s=>{let buttons="",st=s.status||"unknown";if(st==="pending")buttons='<button class="success" data-action="approved">Approve</button><button class="danger" data-action="rejected">Reject</button>';if(st==="approved")buttons='<button class="danger" data-action="suspended">Suspend</button>';if(st==="suspended"||st==="rejected")buttons='<button class="success" data-action="approved">Restore / approve</button>';return '<article class="student"><div class="student-top"><div><h3>'+esc(s.fullName||"Student")+'</h3><div class="meta">'+esc(s.email||"No email")+'<br>'+esc(s.phone||"No phone")+'<br>UID: '+esc(s.id)+'</div></div><span class="badge">'+esc(st.toUpperCase())+'</span></div><div class="actions">'+buttons+'</div></article>'}).join("")}
+$("search").addEventListener("input",render);
+$("students").addEventListener("click",async e=>{const b=e.target.closest("button[data-action]");if(!b)return;const card=b.closest(".student"),uid=card.querySelector(".meta").textContent.match(/UID: (.+)$/)?.[1];if(!uid)return;const status=b.dataset.action;if(!confirm("Change this student's status to "+status+"?"))return;b.disabled=true;try{await updateDoc(doc(db,"users",uid),{status,updatedAt:new Date()});await loadStudents()}catch(err){alert("Update failed: "+friendly(err));b.disabled=false}});
+</script></body></html>
