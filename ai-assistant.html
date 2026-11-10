@@ -9,7 +9,7 @@
 <div class="quick"><button type="button" data-q="Explain a difficult topic to me step by step.">Explain a topic</button><button type="button" data-q="Give me 5 WAEC-style practice questions in Mathematics, one at a time.">Practise WAEC</button><button type="button" data-q="Help me create a simple study timetable for my exams.">Study timetable</button></div>
 <div class="composer"><textarea id="prompt" placeholder="Type your question here…" aria-label="Your question"></textarea><button id="send" type="button">Send</button></div><p class="muted">AI can make mistakes. Check important answers against your textbooks and teacher’s guidance. Please do not share passwords or private information.</p></section></main>
 <script>setTimeout(()=>{const e=document.getElementById("status");if(e&&e.textContent.includes("Checking your student account")){e.textContent="Firebase did not finish loading. Refresh the page and report this message.";e.className="error";}},15000);</script>
-<script type="module">
+<script type="module" onerror="document.getElementById('status').textContent='Firebase scripts could not load. Check your internet connection or browser loading restriction, then send me this message.';document.getElementById('status').className='error';">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.2/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.10.2/firebase-auth.js';
 import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/12.10.2/firebase-firestore.js';
