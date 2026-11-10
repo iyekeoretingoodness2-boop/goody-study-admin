@@ -38,7 +38,7 @@ button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color
 <div class="stat"><strong id="approved">0</strong><span>Approved students</span></div></div>
 <div id="statusMsg" class="notice">Loading student records…</div></div>
 <div class="card"><div class="toolbar"><h2 style="margin:0">Student management</h2><input id="search" placeholder="Search name, email or phone"></div><div id="students"><div class="empty">Loading…</div></div></div>
-<div class="card"><h2>More admin tools</h2><p class="meta">Manage your students and question banks. More teaching tools will be added here.</p><a href="past-questions.html"><button type="button">Open Past Questions Manager</button></a></div>
+<div class="card"><h2>More admin tools</h2><p class="meta">Manage your students and question banks. More teaching tools will be added here.</p><a href="past-questions.html"><button type="button">Open Past Questions Manager</button></a> <a href="learning.html"><button type="button" class="secondary">Manage Study Materials & Lessons</button></a></div>
 </section></main>
 <script>
 document.addEventListener('DOMContentLoaded',()=>{const watch=()=>{const els=document.querySelectorAll('.card,.student,.bank-card,.question-card');if(!('IntersectionObserver'in window)){els.forEach(e=>e.classList.add('goody-visible'));return}const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('goody-visible');io.unobserve(e.target)}}),{threshold:.1,rootMargin:'0px 0px -25px 0px'});els.forEach(e=>{e.classList.add('goody-reveal');if(!e.classList.contains('goody-visible'))io.observe(e)})};watch();new MutationObserver(watch).observe(document.body,{childList:true,subtree:true})});
