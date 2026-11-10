@@ -12,7 +12,7 @@ header h1{font-size:20px;margin:0}header p{margin:5px 0 0;color:#d8e2f3;font-siz
 h2{color:var(--navy);font-size:19px;margin:0 0 14px}label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}
 input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px}
 button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color:#fff;font-weight:bold}.secondary{background:#edf2fa;color:var(--navy)}.danger{background:#a92d36}.success{background:#16794b}
-.login{max-width:440px;margin:35px auto}.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.login{max-width:440px;margin:35px auto}.hidden{display:none!important}.auth-wait{max-width:440px;margin:35px auto;text-align:center;font-weight:bold}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .stat{background:#f6f8fc;border-radius:12px;padding:15px}.stat strong{display:block;font-size:26px;color:var(--navy)}.stat span,.meta{font-size:12px;color:var(--muted)}
 .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}.toolbar input{max-width:280px}
 .student{border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}.student-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -27,7 +27,8 @@ button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color
 <body>
 <header><div><h1>Goody Study App</h1><p>Administrator dashboard</p></div><button id="logout" class="secondary hidden">Sign out</button></header>
 <main class="wrap">
-<section id="loginPanel" class="card login"><h2>Administrator sign in</h2><p class="meta">Sign in with the administrator account created in Firebase Authentication.</p>
+<section id="authWait" class="card auth-wait">Checking administrator session…</section>
+<section id="loginPanel" class="card login hidden"><h2>Administrator sign in</h2><p class="meta">Sign in with the administrator account created in Firebase Authentication.</p>
 <label>Email address</label><input id="email" type="email" autocomplete="username" placeholder="Admin email">
 <label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password">
 <button id="login" style="width:100%;margin-top:16px">Sign in</button><div id="loginMsg" class="notice hidden"></div></section>
@@ -54,7 +55,7 @@ function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt
 function friendly(e){return ({"auth/invalid-credential":"Email or password is incorrect.","auth/too-many-requests":"Too many attempts. Wait and try again.","auth/unauthorized-domain":"Add this website domain in Firebase Authentication > Settings > Authorized domains."})[e.code]||e.message||e.code}
 $("login").onclick=async()=>{ $("login").disabled=true;try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){message("loginMsg",friendly(e),true)}finally{$("login").disabled=false}};
 $("logout").onclick=()=>signOut(auth);
-onAuthStateChanged(auth,async user=>{$("loginPanel").classList.toggle("hidden",!!user);$("adminPanel").classList.add("hidden");$("logout").classList.toggle("hidden",!user);if(!user)return;if(user.uid!==ADMIN_UID){await signOut(auth);message("loginMsg","Access denied: this account is not the configured administrator.",true);return}$("adminPanel").classList.remove("hidden");await loadStudents()});
+onAuthStateChanged(auth,async user=>{$("authWait").classList.add("hidden");$("loginPanel").classList.toggle("hidden",!!user);$("adminPanel").classList.add("hidden");$("logout").classList.toggle("hidden",!user);if(!user)return;if(user.uid!==ADMIN_UID){await signOut(auth);$("loginPanel").classList.remove("hidden");message("loginMsg","Access denied: this account is not the configured administrator.",true);return}$("adminPanel").classList.remove("hidden");await loadStudents()});
 async function loadStudents(){try{const snap=await getDocs(collection(db,"users"));records=snap.docs.map(d=>({id:d.id,...d.data()}));render();message("statusMsg","Student records loaded.");}catch(e){message("statusMsg","Could not load records: "+friendly(e),true)}}
 function render(){const pending=records.filter(x=>x.status==="pending").length,approved=records.filter(x=>x.status==="approved").length;$("total").textContent=records.length;$("pending").textContent=pending;$("approved").textContent=approved;const term=$("search").value.toLowerCase(),list=records.filter(x=>[x.fullName,x.email,x.phone,x.status].join(" ").toLowerCase().includes(term));if(!list.length){$("students").innerHTML='<div class="empty">No student records found yet. They will appear after the student registration system is connected.</div>';return}
 $("students").innerHTML=list.map(s=>{let buttons="",st=s.status||"unknown";if(st==="pending")buttons='<button class="success" data-action="approved">Approve</button><button class="danger" data-action="rejected">Reject</button>';if(st==="approved")buttons='<button class="danger" data-action="suspended">Suspend</button>';if(st==="suspended"||st==="rejected")buttons='<button class="success" data-action="approved">Restore / approve</button>';return '<article class="student"><div class="student-top"><div><h3>'+esc(s.fullName||"Student")+'</h3><div class="meta">'+esc(s.email||"No email")+'<br>'+esc(s.phone||"No phone")+'<br>UID: '+esc(s.id)+'</div></div><span class="badge">'+esc(st.toUpperCase())+'</span></div><div class="actions">'+buttons+'</div></article>'}).join("")}
