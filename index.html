@@ -40,7 +40,7 @@ button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getFirestore,collection,getDocs,doc,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyA5e3hqAkgkpAHhsDUN46ms9iMGlsPtgjI",authDomain:"goody-study-app-d1083.firebaseapp.com",projectId:"goody-study-app-d1083",storageBucket:"goody-study-app-d1083.firebasestorage.app",messagingSenderId:"698337451094",appId:"1:698337451094:web:e4f49ec6fc9e1d297baff7",measurementId:"G-D0KTJBWRP0"};
+const firebaseConfig={apiKey:"AIzaSyB_tJO7MEU1b6IhmcKQVnyQjOicuLOABpw",authDomain:"goody-study-app-d1083.firebaseapp.com",projectId:"goody-study-app-d1083",storageBucket:"goody-study-app-d1083.firebasestorage.app",messagingSenderId:"698337451094",appId:"1:698337451094:web:e4f49ec6fc9e1d297baff7",measurementId:"G-D0KTJBWRP0"};
 const ADMIN_UID="KG1YoAzvJea2Y9oPLlAx6Fow38v1",app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);let records=[];
 function message(id,text,error=false){$(id).textContent=text;$(id).classList.remove("hidden");$(id).classList.toggle("error",error)}
 function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
