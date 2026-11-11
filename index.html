@@ -23,6 +23,32 @@ button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color
 /* Natural scroll reveal */
 .goody-reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}.goody-reveal.goody-visible{opacity:1;transform:translateY(0)}
 @media(prefers-reduced-motion:reduce){.goody-reveal{opacity:1;transform:none;transition:none}}
+
+/* Admin dashboard refresh */
+:root{--navy:#10264b;--blue:#2456c7;--gold:#e5b84b;--bg:#f3f6fb;--ink:#1d2939;--muted:#667085;--line:#e5eaf2}
+body{background:linear-gradient(180deg,#eaf0fb 0,#f5f7fb 260px,var(--bg) 100%);min-height:100vh}
+header{position:sticky;top:0;z-index:20;padding:14px max(16px,calc((100% - 1080px)/2));box-shadow:0 5px 20px #10264b20}
+header>div{display:flex;align-items:center;gap:12px}header>div:before{content:'G';display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#f4d47b,#e5b84b);color:#10264b;font-weight:900;font-size:22px;box-shadow:inset 0 0 0 1px #ffffff70}
+header h1{font-size:19px;letter-spacing:.1px}header p{font-size:12px;opacity:.9}
+.wrap{max-width:1080px;margin:24px auto;padding:0 16px 40px}
+.card{border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 8px 28px #10264b0b;border-color:#e7ecf4}
+h2{font-size:18px;letter-spacing:-.2px}
+.admin-welcome{position:relative;overflow:hidden;background:linear-gradient(120deg,#10264b,#1b417a 72%,#2456c7);color:#fff;border:0;padding:25px 23px}
+.admin-welcome:after{content:'✦';position:absolute;right:22px;top:-24px;font-size:145px;line-height:1;color:#ffffff12;pointer-events:none}
+.admin-welcome h2{color:#fff;font-size:23px;margin:0 0 8px}.admin-welcome p{max-width:620px;color:#dbe7fb;font-size:13px;line-height:1.65;margin:0}
+.admin-kicker{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#f5d98d;margin-bottom:9px}
+.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.section-heading h2{margin:0}.section-heading span{font-size:11px;color:var(--muted)}
+.stats{gap:13px}.stat{background:#f7f9fd;border:1px solid #e8edf5;border-radius:15px;padding:17px;min-height:92px}.stat strong{font-size:27px}.stat span{display:block;margin-top:5px;line-height:1.4}
+.admin-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.shortcut{display:flex;align-items:center;gap:13px;min-height:90px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:16px;text-decoration:none;color:var(--ink);box-shadow:0 5px 18px #10264b08;transition:transform .18s,border-color .18s}
+.shortcut:hover{transform:translateY(-2px);border-color:#b8c9eb}.shortcut-icon{width:44px;height:44px;flex:0 0 44px;border-radius:13px;background:#edf3ff;display:grid;place-items:center;font-size:21px}.shortcut strong{display:block;color:var(--navy);font-size:14px}.shortcut small{display:block;color:var(--muted);font-size:11px;line-height:1.45;margin-top:4px}.shortcut .arrow{margin-left:auto;color:var(--blue);font-size:20px}
+.toolbar{gap:10px}.toolbar h2{flex:1 0 100%}.toolbar input{max-width:none;flex:1;min-width:160px}.toolbar select{padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:var(--ink);font-size:14px}
+button{cursor:pointer;transition:filter .15s,transform .15s}button:hover{filter:brightness(1.04)}button:active{transform:scale(.98)}button:disabled{opacity:.6;cursor:wait}
+.report-grid{gap:12px}.report-stat{padding:15px;border-radius:13px}.report-row,.student{border-radius:14px;background:#fff}.student{padding:16px}.student h3{color:var(--navy)}.badge{white-space:nowrap}
+.notice{border:1px solid #f1e2b3}.notice.error{border-color:#f3caca}
+.login{margin:48px auto;padding:25px}.login h2{font-size:22px}
+@media(max-width:600px){header{padding:12px 14px}.wrap{margin:16px auto;padding:0 12px 30px}.card{padding:16px;border-radius:16px}.admin-welcome{padding:21px 18px}.admin-welcome h2{font-size:21px}.admin-shortcuts{grid-template-columns:1fr;gap:10px}.shortcut{min-height:78px;padding:13px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stats .stat:last-child{grid-column:auto}.stat{padding:13px;min-height:82px}.stat strong{font-size:23px}.toolbar{align-items:stretch}.toolbar input{flex-basis:100%;max-width:none}.toolbar select{flex:1;min-width:0}.toolbar button{flex:1}.report-tools{width:100%}.report-tools button{flex:1}.report-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.report-stat{padding:9px}.report-stat strong{font-size:18px}.report-stat span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.shortcut,button{transition:none}}
 </style></head>
 <body>
 <header><div><h1>Goody Study App</h1><p>Administrator dashboard</p></div><button id="logout" class="secondary hidden">Sign out</button></header>
@@ -33,14 +59,19 @@ button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color
 <label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password">
 <button id="login" style="width:100%;margin-top:16px">Sign in</button><div id="loginMsg" class="notice hidden"></div></section>
 <section id="adminPanel" class="hidden">
-<div class="card"><h2>Dashboard overview</h2><div class="stats">
+<div class="card admin-welcome"><div class="admin-kicker">ADMIN CONTROL CENTRE</div><h2>Welcome back, Administrator</h2><p>Manage student access, monitor examination performance, and keep learning resources organised from one place.</p></div>
+<nav class="admin-shortcuts" aria-label="Admin quick actions">
+<a class="shortcut" href="past-questions.html"><span class="shortcut-icon">📝</span><span><strong>Past Questions & CBT</strong><small>Create question banks and manage practice tests</small></span><span class="arrow">›</span></a>
+<a class="shortcut" href="learning.html"><span class="shortcut-icon">📚</span><span><strong>Study Materials & Lessons</strong><small>Manage learning content and lesson resources</small></span><span class="arrow">›</span></a>
+</nav>
+<div class="card"><div class="section-heading"><h2>Dashboard overview</h2><span>Live account totals</span></div><div class="stats">
 <div class="stat"><strong id="total">0</strong><span>Total student accounts</span></div>
 <div class="stat"><strong id="pending">0</strong><span>Awaiting approval</span></div>
 <div class="stat"><strong id="approved">0</strong><span>Approved students</span></div></div>
 <div id="statusMsg" class="notice">Loading student records…</div></div>
 <div class="card"><div class="toolbar"><h2 style="margin:0">Student management</h2><input id="search" placeholder="Search name, email or phone"><select id="studentStatusFilter" aria-label="Filter students"><option value="all">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="suspended">Suspended</option><option value="rejected">Rejected</option></select><button type="button" id="exportStudents" class="secondary">Export students</button></div><div id="students"><div class="empty">Loading…</div></div><div id="studentDetail" class="notice hidden"></div></div>
 <div class="card"><div class="toolbar"><h2 style="margin:0">Student results & progress</h2><div class="report-tools"><button type="button" id="refreshResults" class="secondary">Refresh results</button><button type="button" id="exportResults">Export CSV</button></div></div><div class="report-grid"><div class="report-stat"><strong id="attemptCount">0</strong><span>Test attempts</span></div><div class="report-stat"><strong id="averageScore">0%</strong><span>Average score</span></div><div class="report-stat"><strong id="passCount">0</strong><span>Scores 50%+</span></div></div><input id="resultSearch" placeholder="Search student, subject, exam or year" aria-label="Search student results"><div id="resultsStatus" class="meta">Loading student results…</div><div id="adminResults"></div></div>
-<div class="card"><h2>More admin tools</h2><p class="meta">Manage your students and question banks. More teaching tools will be added here.</p><a href="past-questions.html"><button type="button">Open Past Questions Manager</button></a> <a href="learning.html"><button type="button" class="secondary">Manage Study Materials & Lessons</button></a></div>
+<div class="card"><h2>Admin workspace</h2><p class="meta">Use the quick-access cards above to manage question banks, CBT practice, study materials and lessons.</p></div>
 </section></main>
 <script>
 document.addEventListener('DOMContentLoaded',()=>{const watch=()=>{const els=document.querySelectorAll('.card,.student,.bank-card,.question-card');if(!('IntersectionObserver'in window)){els.forEach(e=>e.classList.add('goody-visible'));return}const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('goody-visible');io.unobserve(e.target)}}),{threshold:.1,rootMargin:'0px 0px -25px 0px'});els.forEach(e=>{e.classList.add('goody-reveal');if(!e.classList.contains('goody-visible'))io.observe(e)})};watch();new MutationObserver(watch).observe(document.body,{childList:true,subtree:true})});
